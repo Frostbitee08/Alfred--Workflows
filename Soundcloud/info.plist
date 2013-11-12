@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.alfredapp.frostbitee08.soundcloud</string>
+	<key>connections</key>
+	<dict>
+		<key>0B2751DB-691B-48E9-B0C4-6F73C0E36277</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>44C3B74D-0A73-4BEC-812D-723A84BE3F25</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Rocco Del Priore</string>
+	<key>description</key>
+	<string>Play songs from soundcloud</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Soundcloud</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>import soundcloud, webbrowser
+client = soundcloud.Client(client_id='0c61ce131a2c1db8e56059446e33456a')
+
+#Get Data
+inputString = "{query}"
+inputList = inputString.split("|?|")
+user_id = inputList[0]
+permalink = inputList[1]
+
+#Fetch Data
+artist = client.get('/users/' + user_id)
+url = "http://www.soundcloud.com/" + artist.permalink + '/' + permalink
+
+#Open URL
+webbrowser.open(url)</string>
+				<key>type</key>
+				<integer>3</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>44C3B74D-0A73-4BEC-812D-723A84BE3F25</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>soundcloud</string>
+				<key>runningsubtext</key>
+				<string>Searching...</string>
+				<key>script</key>
+				<string>import soundcloud
+from Feedback import Feedback
+
+client = soundcloud.Client(client_id='0c61ce131a2c1db8e56059446e33456a')
+
+feedback = Feedback()
+tracks = client.get('/tracks', q="{query}", limit=9)
+for track in tracks:
+	passThis = str(track.user_id) + "|?|" + track.permalink
+	feedback.add_item(track.title, "", passThis)
+
+print feedback</string>
+				<key>subtext</key>
+				<string>Find Sounds on SoundCloud</string>
+				<key>title</key>
+				<string>Search SoundCloud</string>
+				<key>type</key>
+				<integer>3</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>0B2751DB-691B-48E9-B0C4-6F73C0E36277</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>Find, and open soundcloud songs.
+
+If you want to see the artist in during search, use this code for the script filter: 
+
+import soundcloud
+from Feedback import Feedback
+
+client = soundcloud.Client(client_id='0c61ce131a2c1db8e56059446e33456a')
+
+feedback = Feedback()
+tracks = client.get('/tracks', q="{query}", limit=9)
+for track in tracks:
+	artist = client.get('/users/' + str(track.user_id))
+	url = "http://www.soundcloud.com/" + artist.permalink + '/' + track.permalink
+	feedback.add_item(track.title, artist.permalink, url)
+
+print feedback
+
+And link it to a "Open URL" Action, instead of the given python Script</string>
+	<key>uidata</key>
+	<dict>
+		<key>0B2751DB-691B-48E9-B0C4-6F73C0E36277</key>
+		<dict>
+			<key>ypos</key>
+			<real>10</real>
+		</dict>
+		<key>44C3B74D-0A73-4BEC-812D-723A84BE3F25</key>
+		<dict>
+			<key>ypos</key>
+			<real>10</real>
+		</dict>
+	</dict>
+	<key>webaddress</key>
+	<string>https://github.com/Frostbitee08/</string>
+</dict>
+</plist>
