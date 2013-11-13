@@ -16,6 +16,47 @@
 				<key>modifiersubtext</key>
 				<string></string>
 			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>1D6F1D81-E228-4769-9291-0C228AD727E0</string>
+				<key>modifiers</key>
+				<integer>1048576</integer>
+				<key>modifiersubtext</key>
+				<string>Download Song</string>
+			</dict>
+		</array>
+		<key>1D6F1D81-E228-4769-9291-0C228AD727E0</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>FFE30699-41BB-4843-969D-CB18EACC4A7F</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+		<key>5A204EC4-B646-4E79-9790-995567C4124B</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>E59AD8A5-0D20-468A-BD33-0C1BE1F22123</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+		<key>AC3C2D9F-6DC0-4DD2-898E-6A11F9752250</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>5A204EC4-B646-4E79-9790-995567C4124B</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
 		</array>
 	</dict>
 	<key>createdby</key>
@@ -79,7 +120,7 @@ client = soundcloud.Client(client_id='0c61ce131a2c1db8e56059446e33456a')
 feedback = Feedback()
 tracks = client.get('/tracks', q="{query}", limit=9)
 for track in tracks:
-	passThis = str(track.user_id) + "|?|" + track.permalink
+	passThis = str(track.user_id) + "|?|" + track.permalink + "|?|" + track.title
 	feedback.add_item(track.title, "", passThis)
 
 print feedback</string>
@@ -96,6 +137,141 @@ print feedback</string>
 			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
 			<string>0B2751DB-691B-48E9-B0C4-6F73C0E36277</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<true/>
+				<key>output</key>
+				<integer>0</integer>
+				<key>removeextension</key>
+				<true/>
+				<key>sticky</key>
+				<false/>
+				<key>text</key>
+				<string>{query}</string>
+				<key>title</key>
+				<string>Downloaded Finished!</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>FFE30699-41BB-4843-969D-CB18EACC4A7F</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>import soundcloud, webbrowser, urllib, json, os
+client = soundcloud.Client(client_id='0c61ce131a2c1db8e56059446e33456a')
+pathFile = open('path.txt', 'r')
+downloadsPath = pathFile.readline()
+os.chdir(downloadsPath)
+
+#Get Data
+inputString = "{query}"
+inputList = inputString.split("|?|")
+user_id = inputList[0]
+permalink = inputList[1]
+title = inputList[2]
+
+#Fetch Data
+artist = client.get('/users/' + user_id)
+url = "http://www.soundcloud.com/" + artist.permalink + '/' + permalink
+
+#Download Song
+url = "http://soundcloud.com/widget.json?" + urllib.urlencode({'url':url})
+widget = urllib.urlopen(url).read()
+data = json.loads(widget)
+url = data['stream_url']
+name = title + ".mp3"
+(filename, headers) = urllib.urlretrieve(url, name)
+
+#Output
+print name</string>
+				<key>type</key>
+				<integer>3</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>1D6F1D81-E228-4769-9291-0C228AD727E0</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>pathFile = open('path.txt', 'w')
+pathFile.write('{query}')
+pathFile.close()
+
+print "{query}"</string>
+				<key>type</key>
+				<integer>3</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>5A204EC4-B646-4E79-9790-995567C4124B</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>soundcloud downloads path</string>
+				<key>subtext</key>
+				<string>Example: /Users/Admin/Downloads/</string>
+				<key>text</key>
+				<string>Set Download Path for soundcloud</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>AC3C2D9F-6DC0-4DD2-898E-6A11F9752250</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<false/>
+				<key>output</key>
+				<integer>0</integer>
+				<key>removeextension</key>
+				<false/>
+				<key>sticky</key>
+				<false/>
+				<key>text</key>
+				<string>{query}</string>
+				<key>title</key>
+				<string>Downloads Path Set</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>E59AD8A5-0D20-468A-BD33-0C1BE1F22123</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -127,10 +303,35 @@ And link it to a "Open URL" Action, instead of the given python Script</string>
 			<key>ypos</key>
 			<real>10</real>
 		</dict>
+		<key>1D6F1D81-E228-4769-9291-0C228AD727E0</key>
+		<dict>
+			<key>ypos</key>
+			<real>130</real>
+		</dict>
 		<key>44C3B74D-0A73-4BEC-812D-723A84BE3F25</key>
 		<dict>
 			<key>ypos</key>
 			<real>10</real>
+		</dict>
+		<key>5A204EC4-B646-4E79-9790-995567C4124B</key>
+		<dict>
+			<key>ypos</key>
+			<real>320</real>
+		</dict>
+		<key>AC3C2D9F-6DC0-4DD2-898E-6A11F9752250</key>
+		<dict>
+			<key>ypos</key>
+			<real>320</real>
+		</dict>
+		<key>E59AD8A5-0D20-468A-BD33-0C1BE1F22123</key>
+		<dict>
+			<key>ypos</key>
+			<real>320</real>
+		</dict>
+		<key>FFE30699-41BB-4843-969D-CB18EACC4A7F</key>
+		<dict>
+			<key>ypos</key>
+			<real>130</real>
 		</dict>
 	</dict>
 	<key>webaddress</key>
